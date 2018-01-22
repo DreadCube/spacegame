@@ -1,60 +1,50 @@
 class Game {
 	constructor() {
-		this.game = new Phaser.Game(800, 600, Phaser.AUTO, 'SpaceParty', {
+		this.game = new Phaser.Game(1920, 1080, Phaser.CANVAS, 'SpaceParty', {
 			preload: this.preload.bind(this),
 			create: this.create.bind(this),
 			update: this.update.bind(this),
 			render: this.render.bind(this)
 		});
+
+		Phaser.Plugin.SaveCPU();
 	}
 
 	preload() {
-		this.game.load.image('ship', 'assets/sprites/ship.png');
-		this.game.load.path = 'assets/particlestorm/particles/';
-		this.game.load.images(['flare_point', 'bullet', 'block3', 'block4', '4x4']);
+		this.game.time.advancedTiming = true;
+		this.game.load.image('ship', 'assets/sprites/ship32x32.svg');
+		this.game.load.image('meteor', 'assets/sprites/meteor.svg');
 	}
 
 	create() {
-
-
-	    this.emitter = this.game.add.emitter(0, 0, 100);
-	    this.emitter.makeParticles('4x4');
-	    this.emitter.gravity = 100;
-
 
 		// Arcade Game, daher Arcade Physics
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		this.game.stage.backgroundColor = 'black';
 
+		// Player Objekt initialisieren
+		this.player = new Ship(64, 64);
 
-		this.player = this.game.add.sprite(64, 64, 'ship');
-		this.player.anchor.setTo(0.5, 1);
+		new Meteor(5, 5);
+		new Meteor(300, 400);
+		//Kamera folgt dem Spieler
+		//this.player.ship.fixedToCamera = true;
 
-		this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
+		// 
+		//this.game.camera.follow(this.player.ship);
+		//this.player.anchor.setTo(0.5, 1);
 
-		this.player.body.allowRotation = false;
+
+
+
 	}
 
 	update() {
-		this.player.rotation = this.game.physics.arcade.moveToPointer(this.player, 60, this.game.input.activePointer, 500);
-		this.player.rotation = this.player.rotation - 1.8;
-
-		this.emitter.x = this.player.x;
-		this.emitter.y = this.player.y;
-		
-		//this.emitter.setRotation(this.player.rotation, this.player.rotation);
-		this.emitter.start(true, 500, null, 1);
+		//this.player.ship.body.setZeroVelocity();
 	}
 
 	render() {
-		this.game.debug.spriteInfo(this.player, 32, 32);
-	}
-
-	getRotated(cx, cy, x, y, angle) {
-	    var radians = (Math.PI/180) * angle;
-	    var translatedX = (x - cx) * Math.cos(radians) - (y - cy) * Math.sin(radians) + cx;
-	    var translatedY = (x - cx) * Math.sin(radians) - (y - cy) * Math.cos(radians) + cy;
-	    return {x: parseInt(translatedX), y: parseInt(translatedY)};
+		this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");   
 	}
 }
