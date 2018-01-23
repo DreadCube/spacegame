@@ -24,7 +24,7 @@ class Game {
 		this.game.stage.backgroundColor = 'black';
 
 		// Player Objekt initialisieren
-		this.player = new Ship(64, 64);
+		this.player = new Player(300, 300);
 
 		new Meteor(5, 5);
 		new Meteor(300, 400);
