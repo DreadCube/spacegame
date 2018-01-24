@@ -10,7 +10,7 @@ const p2 = path.join(phaserModule, 'build/custom/p2.js')
 module.exports = {
     entry: {
         app: './src/index.js',
-        vendor: ['pixi', 'p2', 'phaser']
+        vendor: ['babel-polyfill', 'pixi', 'p2', 'phaser']
     },
     module: {
         rules: [

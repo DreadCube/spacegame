@@ -9,6 +9,7 @@ import MeteorGfx from './assets/images/meteor.svg'
 import LaserGfx from './assets/images/laser.svg'
 import BackgroundTrack from './assets/audio/tracks/Allan Haapalainen - A Journey Through Space (8-bit Music).mp3'
 import LaserSfx from './assets/audio/sfx/bullets/laser3.wav'
+import Gateway from './gateway'
 
 export default class Game {
     constructor() {
@@ -21,6 +22,11 @@ export default class Game {
     }
 
     preload() {
+        // WebRTC initialisieren
+        const gateway = new Gateway()
+        gateway.on(gateway.MESSAGE_TYPE.POSITION, data => this.onPosition(data))
+        gateway.on(gateway.MESSAGE_TYPE.FIRE, data => this.onFire(data))
+
         // Debug -> FPS Anzeige
         this.game.time.advancedTiming = true
 
@@ -30,6 +36,16 @@ export default class Game {
 
         this.game.load.audio('backgroundMusic', BackgroundTrack)
         this.game.load.audio('laser', LaserSfx)
+    }
+
+    onPosition(data) {
+        // TODO: Implementieren
+        console.log('Position update', data)
+    }
+
+    onFire(data) {
+        // TODO: Implementieren
+        console.log('Fire', data)
     }
 
     create() {
