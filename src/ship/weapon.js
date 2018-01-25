@@ -14,6 +14,7 @@ export default class Weapon {
         this.weapon.trackRotation = true
 
         this.weapon.onFire.add(this.onFire.bind(this))
+        this.weapon.onHit = this.onHit.bind(this)
     }
 
     reload() {}
@@ -33,6 +34,9 @@ export default class Weapon {
             y: bullet.position.y,
             angle: bullet.rotation
         })
+    }
+
+    onHit() {
     }
 
     attachTo(obj, offsetX, offsetY) {

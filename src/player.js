@@ -17,27 +17,40 @@ export default class Player extends Ship {
         this.button2 = this.game.input.keyboard.addKey(Phaser.KeyCode.TWO)
         this.mouseLeft = this.game.input.mousePointer.leftButton
 
-        this.ship.update = () => this.update()
+        this.ship.checkWorldBounds = true;
+        this.ship.events.onOutOfBounds.add(this.onOutOfBounds)
+       // this.ship.onOutOfBounds = () => this.onOutOfBounds     
+
+    }
+
+    onOutOfBounds(ship) {
+        if (ship.x < 0 || ship.x > ship.game.width) {
+            ship.x = ship.x > 0 ? 0 : ship.game.width;
+        }
+        if (ship.y < 0 || ship.y > ship.game.height) {
+            ship.y = ship.y > 0 ? 0 : ship.game.height;
+        }
     }
 
     update() {
+        super.update();
+
         // Beschleunigung
         if (this.buttonW.isDown) {
             this.ship.rotation = this.game.physics.arcade.accelerateToPointer(
                 this.ship,
                 this.game.input.activePointer,
-                2000,
-                1000,
-                1000
+                1500, //speed
+                800, //xspeedmax
+                800 //yspeedmax
             )
-            this.ship.rotation -= 1.8
         } else {
-            // Bremsvorgang
-            // Abklärungsbedarf:
-            // Ist Bremsbutton nötig? evtl. auch cool wenn automatisch gebremst wird
-            //if(this.buttonS.isDown) {
             this.ship.body.acceleration.x = 0
             this.ship.body.acceleration.y = 0
+        }
+
+        // Bremsen
+        if(this.buttonS.isDown) {
             this.ship.body.velocity.x = this.ship.body.velocity.x * 0.95
             this.ship.body.velocity.y = this.ship.body.velocity.y * 0.95
         }
@@ -50,7 +63,6 @@ export default class Player extends Ship {
             this.game.input.activePointer.y
         )
         this.ship.rotation = angle
-        this.ship.rotation -= 1.8
 
         // Weapon Controls
         if (this.button1.isDown) {

@@ -6,6 +6,7 @@ export default class Laser extends Weapon {
 
         this.weapon.bulletSpeed = 2000
         this.weapon.fireRate = 75
+        this.weapon.damage = 1
     }
 
     playFireSound() {
