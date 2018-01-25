@@ -28,7 +28,7 @@ export default class Gateway {
         this.peer.on('connection', connection => {
             console.log('new connection')
             connection.on('data', data => {
-                var type = MESSAGE_TYPE[data.type]
+                const type = this.MESSAGE_TYPE[data.type]
                 if (!type) {
                     console.err('Message unknown: ' + data)
                     return
@@ -68,7 +68,7 @@ export default class Gateway {
     }
 
     onData(messageType, data) {
-        listeners.forEach(listener => {
+        this.listeners.forEach(listener => {
             if (listener.messageType === messageType) {
                 listener.callback(data)
             }
@@ -81,7 +81,7 @@ export default class Gateway {
     }
 
     sendData(id, messageType, data) {
-        var peer = this.peers[id]
+        const peer = this.peers[id]
         if (peer == null) {
             console.log('Peer id invalid: ' + id)
         }
@@ -93,12 +93,8 @@ export default class Gateway {
     }
 
     broadcast(messageType, data) {
-        this.peers.forEach(peer => {
-            peer.send({
-                ...data,
-                id: this.peerId,
-                type: messageType
-            })
+        Object.keys(this.peers).forEach(peerId => {
+            this.sendData(peerId, messageType, data)
         })
     }
 

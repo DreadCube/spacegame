@@ -1,6 +1,13 @@
 export default class Weapon {
-    constructor(type, ammo, x, y) {
-        this.weapon = game.game.add.weapon(ammo, type)
+    game = null
+    gateway = null
+    weapon = null
+
+    constructor(game, gateway, type, ammo, x, y) {
+        this.game = game
+        this.gateway = gateway
+
+        this.weapon = this.game.add.weapon(ammo, type)
 
         // Bullet wird zerstört sobald Welt verlassen
         this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS
@@ -13,15 +20,19 @@ export default class Weapon {
 
     fire() {
         this.weapon.fire()
-        console.log(this.weapon.bullets)
     }
 
     onFire(bullet, weapon) {
         this.playFireSound()
         // @todo für später (WICHTIG FÜR MULTIPLAYER): Eigentlich sollte hier keine direkte Referenz auf Maus gelegt werden
         // Feuerungsrichtung anhand Attached Objekt berechnen
-        game.game.physics.arcade.moveToPointer(bullet, this.weapon.bulletSpeed)
-        console.log('playsound')
+        this.game.physics.arcade.moveToPointer(bullet, this.weapon.bulletSpeed)
+
+        this.gateway.broadcast(this.gateway.MESSAGE_TYPE.FIRE, {
+            x: bullet.position.x,
+            y: bullet.position.y,
+            angle: bullet.rotation
+        })
     }
 
     attachTo(obj, offsetX, offsetY) {

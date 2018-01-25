@@ -1,5 +1,10 @@
 export default class Meteor {
-    constructor(x, y, r) {
-        this.meteor = game.game.add.sprite(x, y, 'meteor')
+    game = null
+    meteor = null
+
+    constructor(game, x, y, r) {
+        this.game = game
+
+        this.meteor = this.game.add.sprite(x, y, 'meteor')
     }
 }

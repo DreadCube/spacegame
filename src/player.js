@@ -1,25 +1,31 @@
 import Ship from './ship'
 
 export default class Player extends Ship {
-    constructor(x, y) {
-        super(x, y)
-        console.log(Phaser.KeyCode)
-        // Controls Initialisieren
-        this.buttonW = game.game.input.keyboard.addKey(Phaser.KeyCode.W)
-        this.buttonS = game.game.input.keyboard.addKey(Phaser.KeyCode.S)
-        this.button1 = game.game.input.keyboard.addKey(Phaser.KeyCode.ONE)
-        this.button2 = game.game.input.keyboard.addKey(Phaser.KeyCode.TWO)
-        this.mouseLEFT = game.game.input.mousePointer.leftButton
+    buttonW = null
+    buttonS = null
+    button1 = null
+    button2 = null
+    mouseLeft = null
 
-        this.ship.update = this.update.bind(this)
+    constructor(game, gateway, x, y) {
+        super(game, gateway, x, y)
+
+        // Controls Initialisieren
+        this.buttonW = this.game.input.keyboard.addKey(Phaser.KeyCode.W)
+        this.buttonS = this.game.input.keyboard.addKey(Phaser.KeyCode.S)
+        this.button1 = this.game.input.keyboard.addKey(Phaser.KeyCode.ONE)
+        this.button2 = this.game.input.keyboard.addKey(Phaser.KeyCode.TWO)
+        this.mouseLeft = this.game.input.mousePointer.leftButton
+
+        this.ship.update = () => this.update()
     }
 
     update() {
         // Beschleunigung
         if (this.buttonW.isDown) {
-            this.ship.rotation = game.game.physics.arcade.accelerateToPointer(
+            this.ship.rotation = this.game.physics.arcade.accelerateToPointer(
                 this.ship,
-                game.game.input.activePointer,
+                this.game.input.activePointer,
                 2000,
                 1000,
                 1000
@@ -37,24 +43,30 @@ export default class Player extends Ship {
         }
 
         // Ausrichtung erfolgt immer in Richtung Maus Cursor
-        var tAngle = game.game.math.angleBetween(
+        const angle = this.game.math.angleBetween(
             this.ship.x,
             this.ship.y,
-            game.game.input.activePointer.x,
-            game.game.input.activePointer.y
+            this.game.input.activePointer.x,
+            this.game.input.activePointer.y
         )
-        this.ship.rotation = tAngle
+        this.ship.rotation = angle
         this.ship.rotation -= 1.8
 
         // Weapon Controls
         if (this.button1.isDown) {
-            this.weaponSelectIndex = 0
+            this.selectedWeapon = 0
         }
         if (this.button2.isDown) {
-            this.weaponSelectIndex = 1
+            this.selectedWeapon = 1
         }
-        if (this.mouseLEFT.isDown) {
-            this.weapons[this.weaponSelectIndex].fire()
+        if (this.mouseLeft.isDown) {
+            this.weapons[this.selectedWeapon].fire()
         }
+
+        this.gateway.broadcast(this.gateway.MESSAGE_TYPE.POSITION, {
+            x: this.ship.x,
+            y: this.ship.y,
+            angle: angle
+        })
     }
 }
