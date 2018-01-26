@@ -2,8 +2,7 @@ import Peer from 'peerjs'
 import { PEER_HOST, PEER_PORT, PEER_PATH } from './config'
 
 export default class Gateway {
-    MESSAGE_TYPE = {
-        HELLO: 'HELLO',
+    ACTIONS = {
         POSITION: 'POSITION',
         FIRE: 'FIRE'
     }
@@ -21,86 +20,81 @@ export default class Gateway {
         })
         this.peer.on('open', id => {
             this.peerId = id
-            console.log('Connected to server with peer id: ' + id)
-            this.connectPlayers()
+            console.log('Peer: ' + id)
+            this.connectPeers()
         })
 
         this.peer.on('connection', connection => {
-            console.log('new connection')
             connection.on('data', data => {
-                const type = this.MESSAGE_TYPE[data.type]
+                const type = this.ACTIONS[data.action]
                 if (!type) {
-                    console.err('Message unknown: ' + data)
+                    console.err('Invalid action: ' + data.action)
                     return
                 }
                 this.onData(type, data)
             })
             connection.on('close', () => {
-                console.log('Connection closed')
+                console.log('Connection closed by ' + connection.peer)
             })
+            this.connectPeer(connection.peer)
         })
-
-        this.on(this.MESSAGE_TYPE.HELLO, data => this.handleHello(data))
     }
 
-    connectPlayer(id) {
-        if (!this.peers.hasOwnProperty(id)) {
-            this.peers[id] = this.peer.connect(id)
+    connectPeer(id) {
+        if (this.peers.hasOwnProperty(id)) {
+            return
         }
-        this.sendData(id, this.MESSAGE_TYPE.HELLO)
-        console.log('connecting to peer ' + id)
+
+        console.log('Connecting to peer ' + id)
+        this.peers[id] = this.peer.connect(id)
     }
 
-    async connectPlayers() {
+    async connectPeers() {
         const response = await fetch(
             `${
                 window.location.protocol
             }//${PEER_HOST}:${PEER_PORT}${PEER_PATH}/peerjs/peers`
         )
-        const players = await response.json()
+        const peers = await response.json()
 
-        players.forEach(player => {
-            if (player === this.peerId) {
+        peers.forEach(peerId => {
+            if (peerId === this.peerId) {
                 return
             }
-            this.connectPlayer(player)
+            this.connectPeer(peerId)
         })
     }
 
-    onData(messageType, data) {
+    onData(action, data) {
         this.listeners.forEach(listener => {
-            if (listener.messageType === messageType) {
+            if (listener.action === action) {
                 listener.callback(data)
             }
         })
     }
 
-    handleHello(data) {
-        console.log('hello from: ' + data.id)
-        this.connectPlayer(data.id)
-    }
-
-    sendData(id, messageType, data) {
+    sendData(id, action, data = {}) {
         const peer = this.peers[id]
         if (peer == null) {
-            console.log('Peer id invalid: ' + id)
+            console.err('Peer invalid: ' + id)
+            return
         }
         peer.send({
             ...data,
             id: this.peerId,
-            type: messageType
+            action
         })
     }
 
-    broadcast(messageType, data) {
+    broadcast(action, data) {
         Object.keys(this.peers).forEach(peerId => {
-            this.sendData(peerId, messageType, data)
+            this.sendData(peerId, action, data)
         })
     }
 
-    on(messageType, callback) {
+    on(action, callback) {
         this.listeners.push({
-            messageType,
+            action,
             callback
         })
     }

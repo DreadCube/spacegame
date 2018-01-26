@@ -18,8 +18,9 @@ export default class Ship {
         this.ship.anchor.setTo(0.5, 0.5)
 
         this.healthBar = this.game.add.text(x, y, this.health, {
-            font: 'bold 10px Arial', fill: '#fff'
-        });
+            font: 'bold 10px Arial',
+            fill: '#fff'
+        })
 
         // Arcade Physics auf Schiff anwenden
         this.game.physics.enable(this.ship, Phaser.Physics.ARCADE)
@@ -39,21 +40,19 @@ export default class Ship {
         this.ship.update = () => this.update()
     }
 
-
-
     update() {
-        this.healthBar.position.x = this.ship.position.x - 8;
-        this.healthBar.position.y = this.ship.position.y - 8;
-        this.healthBar.setText(this.health);
+        this.healthBar.position.x = this.ship.position.x - 8
+        this.healthBar.position.y = this.ship.position.y - 8
+        this.healthBar.setText(this.health)
     }
 
     onDamage(weapon) {
         this.health -= weapon.damage
-        if(this.health <= 0) {
+        if (this.health <= 0) {
             this.alive = false
             this.ship.destroy()
-            this.healthBar.destroy();
-            this.game.camera.shake(0.005, 100);
+            this.healthBar.destroy()
+            this.game.camera.shake(0.005, 100)
         }
         return !this.alive
     }

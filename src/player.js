@@ -17,23 +17,22 @@ export default class Player extends Ship {
         this.button2 = this.game.input.keyboard.addKey(Phaser.KeyCode.TWO)
         this.mouseLeft = this.game.input.mousePointer.leftButton
 
-        this.ship.checkWorldBounds = true;
+        this.ship.checkWorldBounds = true
         this.ship.events.onOutOfBounds.add(this.onOutOfBounds)
-       // this.ship.onOutOfBounds = () => this.onOutOfBounds     
-
+        // this.ship.onOutOfBounds = () => this.onOutOfBounds
     }
 
     onOutOfBounds(ship) {
         if (ship.x < 0 || ship.x > ship.game.width) {
-            ship.x = ship.x > 0 ? 0 : ship.game.width;
+            ship.x = ship.x > 0 ? 0 : ship.game.width
         }
         if (ship.y < 0 || ship.y > ship.game.height) {
-            ship.y = ship.y > 0 ? 0 : ship.game.height;
+            ship.y = ship.y > 0 ? 0 : ship.game.height
         }
     }
 
     update() {
-        super.update();
+        super.update()
 
         // Beschleunigung
         if (this.buttonW.isDown) {
@@ -50,7 +49,7 @@ export default class Player extends Ship {
         }
 
         // Bremsen
-        if(this.buttonS.isDown) {
+        if (this.buttonS.isDown) {
             this.ship.body.velocity.x = this.ship.body.velocity.x * 0.95
             this.ship.body.velocity.y = this.ship.body.velocity.y * 0.95
         }
@@ -75,7 +74,7 @@ export default class Player extends Ship {
             this.weapons[this.selectedWeapon].fire()
         }
 
-        this.gateway.broadcast(this.gateway.MESSAGE_TYPE.POSITION, {
+        this.gateway.broadcast(this.gateway.ACTIONS.POSITION, {
             x: this.ship.x,
             y: this.ship.y,
             angle: angle

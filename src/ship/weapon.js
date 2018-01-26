@@ -29,15 +29,14 @@ export default class Weapon {
         // Feuerungsrichtung anhand Attached Objekt berechnen
         this.game.physics.arcade.moveToPointer(bullet, this.weapon.bulletSpeed)
 
-        this.gateway.broadcast(this.gateway.MESSAGE_TYPE.FIRE, {
+        this.gateway.broadcast(this.gateway.ACTIONS.FIRE, {
             x: bullet.position.x,
             y: bullet.position.y,
             angle: bullet.rotation
         })
     }
 
-    onHit() {
-    }
+    onHit() {}
 
     attachTo(obj, offsetX, offsetY) {
         this.weapon.trackSprite(obj, offsetX, offsetY, true)
