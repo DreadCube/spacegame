@@ -22,8 +22,18 @@ export default class Rocket extends Weapon {
     onFire(bullet, weapon) {
         super.onFire(bullet, weapon)
         bullet.body.gravity.x = bullet.body.gravity.y = 100
-        bullet.update = () => {
-            this.game.physics.arcade.moveToObject(bullet, this.game.enemies[0].ship, this.weapon.bulletSpeed)
+        bullet.update = () => this.update()
+    }
+
+    update() {
+        if (this.game.enemies.length === 0) {
+            return
         }
+
+        this.game.physics.arcade.moveToObject(
+            bullet,
+            this.game.enemies[0].ship,
+            this.weapon.bulletSpeed
+        )
     }
 }

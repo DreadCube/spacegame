@@ -11,6 +11,8 @@ import LaserGfx from './assets/images/laser.svg'
 import BackgroundTrack from './assets/audio/tracks/Mattashi - Lost in Pixels.mp3'
 import LaserSfx from './assets/audio/sfx/bullets/laser3.wav'
 import RocketSfx from './assets/audio/sfx/bullets/rocket.wav'
+import { DEBUG } from './config'
+import windowSize from './helpers/windowSize'
 
 export default class Game {
     game = null
@@ -20,12 +22,27 @@ export default class Game {
     bullets = []
 
     constructor() {
-        this.game = new Phaser.Game(900, 900, Phaser.CANVAS, 'SpaceParty', {
-            preload: this.preload.bind(this),
-            create: this.create.bind(this),
-            update: this.update.bind(this),
-            render: this.render.bind(this)
-        })
+        let worldWidth, worldHeight
+        if (windowSize.y > windowSize.x) {
+            worldWidth = windowSize.x
+            worldHeight = windowSize.x / 4 * 3
+        } else {
+            worldWidth = windowSize.y / 3 * 4
+            worldHeight = windowSize.y
+        }
+
+        this.game = new Phaser.Game(
+            worldWidth,
+            worldHeight,
+            Phaser.CANVAS,
+            'SpaceParty',
+            {
+                preload: this.preload.bind(this),
+                create: this.create.bind(this),
+                update: this.update.bind(this),
+                render: this.render.bind(this)
+            }
+        )
 
         this.game.bullets = []
     }
@@ -39,7 +56,7 @@ export default class Game {
         this.gateway.on(this.gateway.ACTIONS.FIRE, data => this.onFire(data))
 
         // Debug -> FPS Anzeige
-        this.game.time.advancedTiming = true
+        this.game.time.advancedTiming = DEBUG
 
         this.game.load.image('ship', ShipGfx)
         this.game.load.image('meteor', MeteorGfx)
@@ -76,13 +93,20 @@ export default class Game {
     }
 
     create() {
+        const playerSize = this.game.width - this.game.height
+
         // Arcade Game, daher Arcade Physics
         this.game.physics.startSystem(Phaser.Physics.ARCADE)
 
         this.game.stage.backgroundColor = 'black'
 
         // Player Objekt initialisieren
-        this.player = new Player(this.game, this.gateway, 300, 300)
+        this.player = new Player(
+            this.game,
+            this.gateway,
+            playerSize,
+            playerSize
+        )
 
         for (let i = 0; i < 3; i++) {
             new Meteor(
@@ -151,6 +175,7 @@ export default class Game {
     }
 
     render() {
-        this.game.debug.text(this.game.time.fps || '--', 2, 14, '#00ff00')
+        DEBUG &&
+            this.game.debug.text(this.game.time.fps || '--', 2, 14, '#00ff00')
     }
 }

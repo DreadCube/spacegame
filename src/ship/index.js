@@ -52,7 +52,7 @@ export default class Ship {
             this.alive = false
             this.ship.destroy()
             this.healthBar.destroy()
-            this.game.camera.shake(0.005, 100)
+            this.game.camera.shake(0.05, 300)
         }
         return !this.alive
     }

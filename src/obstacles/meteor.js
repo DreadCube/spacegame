@@ -12,6 +12,6 @@ export default class Meteor {
     }
 
     update() {
-    	this.meteor.rotation += 0.01;
+        this.meteor.rotation += 0.01
     }
 }
