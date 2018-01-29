@@ -30,10 +30,17 @@ export default class Rocket extends Weapon {
             return
         }
 
+        // @todo: über getDistance nähester Enemy finden ->
+        // anschliessend folgt Bullet diesem und nicht Konstant enemies[0]
         this.game.physics.arcade.moveToObject(
             bullet,
             this.game.enemies[0].ship,
             this.weapon.bulletSpeed
         )
+    }
+
+
+    getDistance(bullet, enemy) {
+        return Math.sqrt( (player.x - enemy.x) * (player.x - enemy.x) + (player.y - enemy.y) * (player.y - enemy.y));
     }
 }

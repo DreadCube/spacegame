@@ -40,6 +40,15 @@ export default class Ship {
         this.ship.update = () => this.update()
     }
 
+    onOutOfBounds(ship) {console.log('hier');
+        if (ship.x < 0 || ship.x > ship.game.width) {
+            ship.x = ship.x > 0 ? 0 : ship.game.width
+        }
+        if (ship.y < 0 || ship.y > ship.game.height) {
+            ship.y = ship.y > 0 ? 0 : ship.game.height
+        }
+    }
+
     update() {
         this.healthBar.position.x = this.ship.position.x - 8
         this.healthBar.position.y = this.ship.position.y - 8

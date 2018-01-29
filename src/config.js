@@ -4,4 +4,4 @@ export const PEER_PORT = 9000
 export const PEER_PATH = '/api'
 
 // Debug
-export const DEBUG = false
+export const DEBUG = true

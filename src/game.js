@@ -2,11 +2,12 @@ import 'pixi'
 import 'p2'
 import Phaser from 'phaser'
 import Player from './player'
-import { Meteor } from './obstacles'
+import { Meteor, Star } from './obstacles'
 import Ship from './ship'
 import Gateway from './gateway'
 import ShipGfx from './assets/images/ship.svg'
 import MeteorGfx from './assets/images/meteor.svg'
+import StarGfx from './assets/images/star.svg'
 import LaserGfx from './assets/images/laser.svg'
 import BackgroundTrack from './assets/audio/tracks/Mattashi - Lost in Pixels.mp3'
 import LaserSfx from './assets/audio/sfx/bullets/laser3.wav'
@@ -60,6 +61,7 @@ export default class Game {
 
         this.game.load.image('ship', ShipGfx)
         this.game.load.image('meteor', MeteorGfx)
+        this.game.load.image('star', StarGfx)
         this.game.load.image('laser', LaserGfx)
 
         this.game.load.audio('backgroundMusic', BackgroundTrack)
@@ -108,6 +110,11 @@ export default class Game {
             playerSize
         )
 
+        for(let i = 0; i < 200; i++) {
+            new Star(this.game, this.game.rnd.integerInRange(0, this.game.width),
+                this.game.rnd.integerInRange(0, this.game.width));
+        }
+
         for (let i = 0; i < 3; i++) {
             new Meteor(
                 this.game,
@@ -130,43 +137,34 @@ export default class Game {
     }
 
     checkCollisions() {
-        this.game.world.forEachAlive(
-            function(item) {
-                if (item.name === 'group') {
-                    item.forEachAlive(
-                        function(obj) {
-                            // Für jedes Bullet Objekt
-                            if (obj.data.bulletManager) {
-                                if (
-                                    this.player.alive &&
-                                    this.player.ship.overlap(obj)
-                                ) {
-                                    this.player.onDamage(obj.data.bulletManager)
-                                    //@todo: Damage von eigenen Waffen sollte verhindert werden
-                                    // Wahrscheinlich möglich über weapon.trackedSprite
-                                    obj.data.bulletManager.onHit() //bulletManager entspricht Weapon Klasse
-                                    obj.kill()
-                                }
-                                this.enemies.forEach(
-                                    function(enemy) {
-                                        if (
-                                            enemy.alive &&
-                                            enemy.ship.overlap(obj)
-                                        ) {
-                                            enemy.onDamage(
-                                                obj.data.bulletManager
-                                            )
-                                            obj.data.bulletManager.onHit()
-                                            obj.kill()
-                                        }
-                                    }.bind(this)
+    	this.game.world.forEachAlive((item) => {
+    		if(item.name === 'group') {
+                item.forEachAlive((obj) => {
+                    if(obj.data.bulletManager) {
+
+                        let allPlayers = []
+                        allPlayers.push(this.player)
+                        allPlayers = allPlayers.concat(this.enemies);
+                        allPlayers.forEach(function(player) {
+                            if(
+                                player.alive &&
+                                player.ship.overlap(obj) &&
+                                // verhindert Schaden mit eigenen Bullets
+                                // renderOrderID scheint eundeutig zu sein.
+                                // Falls doch nicht müssten wohl x/y Koordinaten geprüft werden
+                                obj.data.bulletManager.trackedSprite.renderOrderID != player.ship.renderOrderID
+                            ) {
+                                player.onDamage(
+                                    obj.data.bulletManager
                                 )
+                                obj.data.bulletManager.onHit()
+                                obj.kill()
                             }
-                        }.bind(this)
-                    )
-                }
-            }.bind(this)
-        )
+                        })
+                    }
+                })
+            }
+    	})
     }
 
     update() {

@@ -1,3 +1,3 @@
 import Meteor from './meteor'
-
-export { Meteor }
+import Star from './star'
+export { Meteor, Star }
