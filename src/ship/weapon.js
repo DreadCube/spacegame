@@ -32,7 +32,8 @@ export default class Weapon {
         this.gateway.broadcast(this.gateway.ACTIONS.FIRE, {
             x: bullet.position.x,
             y: bullet.position.y,
-            angle: bullet.rotation
+            mouseX: this.game.input.mousePointer.x,
+            mouseY: this.game.input.mousePointer.y
         })
     }
 

@@ -40,7 +40,7 @@ export default class Ship {
         this.ship.update = () => this.update()
     }
 
-    onOutOfBounds(ship) {console.log('hier');
+    onOutOfBounds(ship) {
         if (ship.x < 0 || ship.x > ship.game.width) {
             ship.x = ship.x > 0 ? 0 : ship.game.width
         }

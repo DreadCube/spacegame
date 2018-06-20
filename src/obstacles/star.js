@@ -6,6 +6,8 @@ export default class Star {
 
         this.star = this.game.add.sprite(x, y, 'star')
         this.star.anchor.setTo(0.5, 0.5)
+        this.star.width = 8;
+        this.star.height = 8;
 
     
         this.star.update = () => this.update()

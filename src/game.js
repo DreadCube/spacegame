@@ -6,8 +6,16 @@ import { Meteor, Star } from './obstacles'
 import Ship from './ship'
 import Gateway from './gateway'
 import ShipGfx from './assets/images/ship.svg'
+import SpaceShipGfx from './assets/images/space-ship.svg'
 import MeteorGfx from './assets/images/meteor.svg'
-import StarGfx from './assets/images/star.svg'
+import MeteorGfx_1 from './assets/images/earth.svg'
+import MeteorGfx_2 from './assets/images/jupiter.svg'
+import MeteorGfx_3 from './assets/images/neptune.svg'
+import MeteorGfx_4 from './assets/images/jupiter.svg'
+import MeteorGfx_5 from './assets/images/pluto.svg'
+import MeteorGfx_6 from './assets/images/uranus.svg'
+import MeteorGfx_7 from './assets/images/venus.svg'
+import StarGfx from './assets/images/star_2.svg'
 import LaserGfx from './assets/images/laser.svg'
 import BackgroundTrack from './assets/audio/tracks/Mattashi - Lost in Pixels.mp3'
 import LaserSfx from './assets/audio/sfx/bullets/laser3.wav'
@@ -57,10 +65,17 @@ export default class Game {
         this.gateway.on(this.gateway.ACTIONS.FIRE, data => this.onFire(data))
 
         // Debug -> FPS Anzeige
-        this.game.time.advancedTiming = DEBUG
+       // this.game.time.advancedTiming = DEBUG
 
-        this.game.load.image('ship', ShipGfx)
+        this.game.load.image('ship', SpaceShipGfx || ShipGfx)
         this.game.load.image('meteor', MeteorGfx)
+        this.game.load.image('meteor_1', MeteorGfx_1)
+        this.game.load.image('meteor_2', MeteorGfx_2)
+        this.game.load.image('meteor_3', MeteorGfx_3)
+        this.game.load.image('meteor_4', MeteorGfx_4)
+        this.game.load.image('meteor_5', MeteorGfx_5)
+        this.game.load.image('meteor_6', MeteorGfx_6)
+        this.game.load.image('meteor_7', MeteorGfx_7)
         this.game.load.image('star', StarGfx)
         this.game.load.image('laser', LaserGfx)
 
@@ -74,24 +89,23 @@ export default class Game {
         if (enemy) {
             enemy.ship.x = data.x
             enemy.ship.y = data.y
+            enemy.ship.rotation = data.rotation
         } else {
             this.enemies.push(new Ship(this.game, this.gateway, data.x, data.y))
         }
     }
 
     onFire(data) {
-        /*
+        
         const enemy = this.enemies.find(enemy => enemy.name === data.name)
         if (enemy) {
-            const bullet = this.bullets.getFirstDead()
-            bullet.reset(enemy.ship.x, enemy.ship.y)
-            bullet.rotation = this.game.physics.arcade.moveToObject(
-                bullet,
-                enemy.ship,
-                500
-            )
+            // allenfalls noch benötigt
+            //enemy.weapons[enemy.selectedWeapon].fireFrom.set(data.x, data.y);
+            enemy.weapons[enemy.selectedWeapon].onFire = null
+            enemy.weapons[enemy.selectedWeapon].playFireSound()
+            enemy.weapons[enemy.selectedWeapon].weapon.fireAtXY(data.mouseX, data.mouseY)
         }
-        */
+        
     }
 
     create() {
@@ -110,12 +124,18 @@ export default class Game {
             playerSize
         )
 
+       /* for (let i = 0; i < 20; i++) {
+            let s = new Ship(this.game, this.gateway, this.game.rnd.integerInRange(100, this.game.width - 100), this.game.rnd.integerInRange(100, this.game.width - 100))
+            s.ship.tint = Math.random() * 0xffffff
+            s.ship.rotation = this.game.rnd.integerInRange(0, 3)
+        }*/
+
         for(let i = 0; i < 200; i++) {
             new Star(this.game, this.game.rnd.integerInRange(0, this.game.width),
                 this.game.rnd.integerInRange(0, this.game.width));
         }
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 6; i++) {
             new Meteor(
                 this.game,
                 this.game.rnd.integerInRange(100, this.game.width - 100),

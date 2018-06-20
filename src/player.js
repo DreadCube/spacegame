@@ -50,7 +50,7 @@ export default class Player extends Ship {
         this.gateway.broadcast(this.gateway.ACTIONS.POSITION, {
             x: this.ship.x,
             y: this.ship.y,
-            angle: angle
+            rotation: angle
         })
 
         // Weapon Controls
