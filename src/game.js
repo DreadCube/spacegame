@@ -63,6 +63,7 @@ export default class Game {
             this.onPosition(data)
         )
         this.gateway.on(this.gateway.ACTIONS.FIRE, data => this.onFire(data))
+        this.gateway.on(this.gateway.ACTIONS.DAMAGE, data => this.onDamage(data))
 
         // Debug -> FPS Anzeige
        // this.game.time.advancedTiming = DEBUG
@@ -96,7 +97,6 @@ export default class Game {
     }
 
     onFire(data) {
-        
         const enemy = this.enemies.find(enemy => enemy.name === data.name)
         if (enemy) {
             // allenfalls noch benötigt
@@ -105,7 +105,13 @@ export default class Game {
             enemy.weapons[enemy.selectedWeapon].playFireSound()
             enemy.weapons[enemy.selectedWeapon].weapon.fireAtXY(data.mouseX, data.mouseY)
         }
-        
+    }
+
+    onDamage(data) {
+        const enemy = this.enemies.find(enemy => enemy.name === data.name)
+        if(enemy) {
+            enemy.onDamage(enemy.weapons[enemy.selectedWeapon])
+        }
     }
 
     create() {
@@ -124,11 +130,12 @@ export default class Game {
             playerSize
         )
 
-       /* for (let i = 0; i < 20; i++) {
+       for (let i = 0; i < 20; i++) {
             let s = new Ship(this.game, this.gateway, this.game.rnd.integerInRange(100, this.game.width - 100), this.game.rnd.integerInRange(100, this.game.width - 100))
             s.ship.tint = Math.random() * 0xffffff
             s.ship.rotation = this.game.rnd.integerInRange(0, 3)
-        }*/
+            this.enemies.push(s)
+        }
 
         for(let i = 0; i < 200; i++) {
             new Star(this.game, this.game.rnd.integerInRange(0, this.game.width),

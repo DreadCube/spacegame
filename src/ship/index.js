@@ -1,11 +1,13 @@
 import Laser from './laser'
 import Rocket from './rocket'
+import HealthBar from '../helpers/healthbar.js'
 
 export default class Ship {
     game = null
     gateway = null
     alive = true
     health = 10
+    startHealth = 10
     weapons = []
     selectedWeapon = 0
     ship = null
@@ -17,10 +19,23 @@ export default class Ship {
         this.ship = this.game.add.sprite(x, y, 'ship')
         this.ship.anchor.setTo(0.5, 0.5)
 
-        this.healthBar = this.game.add.text(x, y, this.health, {
-            font: 'bold 10px Arial',
-            fill: '#fff'
+
+        // @todo: Healthbar kann allenfalls ins Player Objekt verschoben werden,
+        // wenn Healthbar von fremden Spielern / Schiffen nicht angezeigt werden muss
+        this.healthbar = new HealthBar(game, {
+            x,
+            y,
+            width: 32,
+            height: 4,
+            bg: {
+                color: '#000000',
+            },
+            bar: {
+                color: '#ffffff'
+            },
+            animationDuration: 100
         })
+        this.healthbar.setPercent(100)
 
         // Arcade Physics auf Schiff anwenden
         this.game.physics.enable(this.ship, Phaser.Physics.ARCADE)
@@ -50,22 +65,30 @@ export default class Ship {
     }
 
     update() {
-        this.healthBar.position.x = this.ship.position.x - 8
-        this.healthBar.position.y = this.ship.position.y - 8
-        this.healthBar.setText(this.health)
+        this.healthbar.setPosition(this.ship.position.x - 8, this.ship.position.y - 48)
+
     }
 
     onDamage(weapon) {
+        console.log('sd')
         this.health -= weapon.damage
+        this.healthbar.setPercent((100 / this.startHealth) * this.health)
+
+        this.gateway.broadcast(this.gateway.ACTIONS.DAMAGE, {
+            damage: true
+        })
+
         if (this.health <= 0) {
             this.alive = false
             this.ship.destroy()
-            this.healthBar.destroy()
+            //this.healthBar.kill()
             this.game.camera.shake(0.05, 300)
         }
         return !this.alive
     }
 
+
+    // @todo: Nicht im Einsatz?? Allenfalls löschen
     damage(weapon) {
         this.health -= 1
 

@@ -4,7 +4,9 @@ import { PEER_HOST, PEER_PORT, PEER_PATH } from './config'
 export default class Gateway {
     ACTIONS = {
         POSITION: 'POSITION',
-        FIRE: 'FIRE'
+        FIRE: 'FIRE',
+        DAMAGE: 'DAMAGE',
+        KILL: 'KILL'
     }
 
     peer = null
